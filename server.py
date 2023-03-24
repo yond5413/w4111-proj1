@@ -47,7 +47,7 @@ engine = create_engine(DATABASEURI)
 #
 with engine.connect() as conn:
 	create_table_command = """
-	CREATE TABLE IF NOT EXISTS test (
+	CREATE TABLE IF NOT EXISTS  (
 		id serial,
 		name text
 	)
@@ -119,7 +119,8 @@ def index():
 	#
 	# example of a database query
 	#
-	select_query = "SELECT name from test"
+	#select_query = "SELECT name from test"
+	select_query = "SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	names = []
 	for result in cursor:
