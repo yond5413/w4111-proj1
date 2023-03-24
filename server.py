@@ -47,7 +47,7 @@ engine = create_engine(DATABASEURI)
 #
 with engine.connect() as conn:
 	create_table_command = """
-	CREATE TABLE IF NOT EXISTS  (
+	CREATE TABLE IF NOT EXISTS test (
 		id serial,
 		name text
 	)
