@@ -17,7 +17,6 @@ from flask import Flask, request, render_template, g, redirect, Response
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 
-
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
 #
@@ -45,7 +44,7 @@ engine = create_engine(DATABASEURI)
 # Example of running queries in your database
 # Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
 #
-with engine.connect() as conn:
+'''with engine.connect() as conn:
 	create_table_command = """
 	CREATE TABLE IF NOT EXISTS test (
 		id serial,
@@ -56,7 +55,7 @@ with engine.connect() as conn:
 	insert_table_command = """INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace')"""
 	res = conn.execute(text(insert_table_command))
 	# you need to commit for create, insert, update queries to reflect
-	conn.commit()
+	conn.commit()'''
 
 
 @app.before_request
@@ -114,8 +113,6 @@ def index():
 
 	# DEBUG: this is debugging code to see what request looks like
 	print(request.args)
-
-
 	#
 	# example of a database query
 	#
@@ -126,7 +123,6 @@ def index():
 	for result in cursor:
 		names.append(result[1])# result[0]
 	cursor.close()
-
 	#
 	# Flask uses Jinja templates, which is an extension to HTML where you can
 	# pass data to a template and dynamically generate HTML based on the data
@@ -154,8 +150,6 @@ def index():
 	#     {% endfor %}
 	#
 	context = dict(data = names)
-
-
 	#
 	# render_template looks in the templates/ folder for files.
 	# for example, the below file reads template/index.html
