@@ -152,7 +152,6 @@ def login():
 	return render_template('auth/login.html')
 @app.route('/register')
 def register():
-	#abort(401)
 	return render_template('auth/register.html')
 @app.route('/logout')
 def logout():

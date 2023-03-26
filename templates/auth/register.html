@@ -10,6 +10,16 @@
     <input name="username" id="username" required>
     <label for="password">Password</label>
     <input type="password" name="password" id="password" required>
-    <input type="submit" value="Register">
+    <!---->
+    <label for="account type">Select you account type:</label>
+    <form action="/submit" method="POST">
+      <nav>
+        <ul>
+          <li><a href="Consumer">Consumer Account</a></li>
+          <li><a href="Seller">Seller Account</a></li>
+        </ul>
+      </nav>
+     <!---->
+      <input type="submit" value="Register">
   </form>
 {% endblock %}
