@@ -39,11 +39,6 @@ DATABASEURI = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWRD}@{DATABASE_HO
 # This line creates a database engine that knows how to connect to the URI above.
 #
 engine = create_engine(DATABASEURI)
-
-#
-# Example of running queries in your database
-# Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
-#
 '''with engine.connect() as conn:
 	create_table_command = """
 	CREATE TABLE IF NOT EXISTS test (
@@ -56,7 +51,6 @@ engine = create_engine(DATABASEURI)
 	res = conn.execute(text(insert_table_command))
 	# you need to commit for create, insert, update queries to reflect
 	conn.commit()'''
-
 
 @app.before_request
 def before_request():
@@ -84,7 +78,6 @@ def teardown_request(exception):
 		g.conn.close()
 	except Exception as e:
 		pass
-
 
 #
 # @app.route is a decorator around index() that means:
@@ -123,38 +116,9 @@ def index():
 	for result in cursor:
 		names.append(result[1])# result[0]
 	cursor.close()
-	#
-	# Flask uses Jinja templates, which is an extension to HTML where you can
-	# pass data to a template and dynamically generate HTML based on the data
-	# (you can think of it as simple PHP)
-	# documentation: https://realpython.com/primer-on-jinja-templating/
-	#
-	# You can see an example template in templates/index.html
-	#
-	# context are the variables that are passed to the template.
-	# for example, "data" key in the context variable defined below will be 
-	# accessible as a variable in index.html:
-	#
-	#     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-	#     <div>{{data}}</div>
-	#     
-	#     # creates a <div> tag for each element in data
-	#     # will print: 
-	#     #
-	#     #   <div>grace hopper</div>
-	#     #   <div>alan turing</div>
-	#     #   <div>ada lovelace</div>
-	#     #
-	#     {% for n in data %}
-	#     <div>{{n}}</div>
-	#     {% endfor %}
-	#
+	
 	context = dict(data = names)
-	#
-	# render_template looks in the templates/ folder for files.
-	# for example, the below file reads template/index.html
-	#
-	return render_template("index.html", **context)
+	return render_template("proj1/index.html")#render_template("GivenByProf/index.html", **context)
 
 #
 # This is an example of a different path.  You can see it at:
@@ -166,7 +130,7 @@ def index():
 #
 @app.route('/another')
 def another():
-	return render_template("another.html")
+	return render_template("GivenByProf/another.html")
 
 
 # Example of adding new data to the database
@@ -185,10 +149,14 @@ def add():
 
 @app.route('/login')
 def login():
-	abort(401)
-	this_is_never_executed()
-
-
+	return render_template('auth/login.html')
+@app.route('/register')
+def register():
+	#abort(401)
+	return render_template('auth/register.html')
+@app.route('/logout')
+def logout():
+	return render_template('auth/logout.html')
 if __name__ == "__main__":
 	import click
 
