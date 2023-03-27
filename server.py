@@ -12,10 +12,11 @@ import os
   # accessible as a variable in index.html:
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
-
+from flask import Flask, request, render_template, g, redirect, Response, flash, session
+## added flash and session will double check if these are fine
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
+app.config['SECRET_KEY'] = 'mysecretkey'## standard practice to have secret key
 
 #
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
@@ -30,14 +31,12 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 # Modify these with your own credentials you received from TA!
 DATABASE_USERNAME = "rm3932"
-DATABASE_PASSWRD = "4577" #TODO ? can you confirm if this right I forgot
+DATABASE_PASSWRD = "4577" 
 DATABASE_HOST = '34.28.53.86'#"34.148.107.47" # change to 34.28.53.86 if you used database 2 for part 2
 DATABASEURI = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWRD}@{DATABASE_HOST}/project1"
 
 #DATABASEURI = "postgresql://rm392:4577@34.28.53.86/project1"
-#
 # This line creates a database engine that knows how to connect to the URI above.
-#
 engine = create_engine(DATABASEURI)
 
 @app.before_request
@@ -66,7 +65,6 @@ def teardown_request(exception):
 		g.conn.close()
 	except Exception as e:
 		pass
-
 #
 # @app.route is a decorator around index() that means:
 #   run index() whenever the user tries to access the "/" path using a GET request
@@ -107,7 +105,6 @@ def index():
 	
 	context = dict(data = names)
 	return render_template("proj1/index.html",)#render_template("GivenByProf/index.html", **context)
-
 #
 # This is an example of a different path.  You can see it at:
 # 
@@ -136,6 +133,7 @@ def another():
 
 
 # Example of adding new data to the database
+# from what the prof showed 
 @app.route('/add', methods=['POST'])
 def add():
 	# accessing form inputs from user
@@ -160,24 +158,28 @@ def login():
 		## double check account table !
 		#params["username"] = username
 		#params["password"] = password
-		select_query = "SELECT * from account"
+		select_query = "SELECT * FROM account"
 		cursor = g.conn.execute(text(select_query))
 		#names = []
 		for result in cursor:
 		#names.append(result)# result[0]
 			if result[1] == username:
-				if result[0] == password:
+				if result[2] == password:
 				# do login stuff
-					pass
+					flash("Login valid please wait shortly...")
+					cursor.close()
+					## find which account it is and move to that template
+					## session object can store stuff like a dictionary if needed
+					## add some of the session object instances to help keep track of info
 				else:
 					# bad login -> usernames are unique based off our logic in register
 					# yet to implement but won't allow registation with the same username 
 					break 
-			else:
-				pass
 		cursor.close()
-		print("DID a run through lol")
-		return render_template('auth/login.html')
+		#print("DID a run through lol")
+		flash('Invalid login info please try again.')
+		return redirect('/login')#render_template('auth/login.html')
+
 @app.route('/register', methods=['GET','POST'])
 def register():
 	if request.method == 'GET':
@@ -187,10 +189,56 @@ def register():
 		password = request.form['password']
 		firstname = request.form['firstname']
 		lastname = request.form['lastname']
+		account = request.form['account']
+		if not(checkUsername(username)):
+			flash("Username has already been claimed.\n If this is you please login otherwise try a new username")
+			redirect('/register')
+		elif checkUsername(username):
+			#### some insert statements and stuff 
+			#### need to edit schema so id is account_id is incremented
+			####
+			pass
 		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
-	return render_template('auth/logout.html')
+	### might not need an html file lol
+	return redirect("/")
+
+### some helper functions
+def getAccountType(accountId):
+	## used for login
+	## essentially itterate accross each table and see if id is in table
+	
+	select_query = 'SELECT account_id From consumer'
+	result = g.conn.execute(text(select))
+	for id in result:
+		if id == accountId:
+			print("success")
+			return 'consumer'
+	result.close()
+	select_query = 'SELECT account_id From seller'
+	result = g.conn.execute(text(select))
+	for id in result:
+		if id == accountId:
+			print("success")
+			return 'seller'
+	result.close()
+	select_query = 'SELECT account_id From admin'
+	result = g.conn.execute(text(select))
+	for id in result:
+		if id == accountId:
+			print("success")
+			result.close()
+			return 'admin'
+def checkUsername(username):
+	### returns true or false 
+	## if username is in db account table return false
+	select_query = "SELECT username FROM account"
+	result =  g.conn.execute(text(select_query))
+	for user in result:
+		if user == username:
+			return False
+	return True
 if __name__ == "__main__":
 	import click
 
