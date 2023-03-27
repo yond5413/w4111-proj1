@@ -151,37 +151,43 @@ def add():
 
 @app.route('/login', methods=['GET','POST'])
 def login():
-
-	#username = request.form['username']
-	#password = request.form['password']
-	#params = {}
-	## double check account table !
-	#params["username"] = username
-	#params["password"] = password
-	#select_query = "SELECT * from account"
-	#cursor = g.conn.execute(text(select_query))
-	#names = []
-	#for result in cursor:
+	if request.method == 'GET':
+		return render_template('auth/login.html')
+	elif request.method == 'POST':
+		username = request.form['username']
+		password = request.form['password']
+		#params = {}
+		## double check account table !
+		#params["username"] = username
+		#params["password"] = password
+		select_query = "SELECT * from account"
+		cursor = g.conn.execute(text(select_query))
+		#names = []
+		for result in cursor:
 		#names.append(result)# result[0]
-		#if result[1] == username:
-			#if result[0] == password:
+			if result[1] == username:
+				if result[0] == password:
 				# do login stuff
-			#	pass
-			#else:
-				# bad login -> usernames are unique based off our logic in register
-				# yet to implement but won't allow registation with the same username 
-				#break 
-		#else:
-			#pass
-	#cursor.close()
-	return render_template('auth/login.html')
+					pass
+				else:
+					# bad login -> usernames are unique based off our logic in register
+					# yet to implement but won't allow registation with the same username 
+					break 
+			else:
+				pass
+		cursor.close()
+		print("DID a run through lol")
+		return render_template('auth/login.html')
 @app.route('/register', methods=['GET','POST'])
 def register():
-	username = request.form['username']
-	password = request.form['password']
-	firstname = request.form['firstname']
-	lastname = request.form['lastname']
-	return render_template('auth/register.html')
+	if request.method == 'GET':
+		return render_template('auth/register.html')
+	elif request.method == 'POST':
+		username = request.form['username']
+		password = request.form['password']
+		firstname = request.form['firstname']
+		lastname = request.form['lastname']
+		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
 	return render_template('auth/logout.html')
