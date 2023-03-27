@@ -39,18 +39,6 @@ DATABASEURI = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWRD}@{DATABASE_HO
 # This line creates a database engine that knows how to connect to the URI above.
 #
 engine = create_engine(DATABASEURI)
-'''with engine.connect() as conn:
-	create_table_command = """
-	CREATE TABLE IF NOT EXISTS test (
-		id serial,
-		name text
-	)
-	"""
-	res = conn.execute(text(create_table_command))
-	insert_table_command = """INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace')"""
-	res = conn.execute(text(insert_table_command))
-	# you need to commit for create, insert, update queries to reflect
-	conn.commit()'''
 
 @app.before_request
 def before_request():
@@ -118,7 +106,7 @@ def index():
 	cursor.close()
 	
 	context = dict(data = names)
-	return render_template("proj1/index.html")#render_template("GivenByProf/index.html", **context)
+	return render_template("proj1/index.html",)#render_template("GivenByProf/index.html", **context)
 
 #
 # This is an example of a different path.  You can see it at:
@@ -130,7 +118,21 @@ def index():
 #
 @app.route('/another')
 def another():
-	return render_template("GivenByProf/another.html")
+	# DEBUG: this is debugging code to see what request looks like
+	print(request.args)
+	#
+	# example of a database query
+	#
+	#select_query = "SELECT name from test"
+	select_query = "SELECT * from admin"
+	cursor = g.conn.execute(text(select_query))
+	names = []
+	for result in cursor:
+		names.append(result)# result[0]
+	cursor.close()
+	
+	context = dict(data = names)
+	return render_template("GivenByProf/index.html",**context)#render_template("GivenByProf/another.html")
 
 
 # Example of adding new data to the database
@@ -149,6 +151,15 @@ def add():
 
 @app.route('/login')
 def login():
+	username = request.form['username']
+	password = request.form['password']
+	#params = {}
+	## double check account table !
+	#params["username"] = username
+	#params["password"] = password
+	select_query = "SELECT * from account"
+	g.conn.execute(text(select_query))
+
 	return render_template('auth/login.html')
 @app.route('/register')
 def register():
