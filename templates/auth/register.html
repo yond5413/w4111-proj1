@@ -12,13 +12,11 @@
     <input type="password" name="password" id="password" required>
     <!---->
     <label for="account type">Select you account type:</label>
-    <form action="/submit" method="POST">
-      <nav>
-        <ul>
-          <li><a href="Consumer">Consumer Account</a></li>
-          <li><a href="Seller">Seller Account</a></li>
-        </ul>
-      </nav>
+      <select id = "account" name ="account" required>
+        <option value="" disabled selected>Select an option</option>  
+        <option value="consumer" >Consumer</option>  
+        <option value="seller">Seller </option>  
+      </select>
      <!---->
       <input type="submit" value="Register">
   </form>
