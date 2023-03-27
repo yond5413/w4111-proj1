@@ -149,20 +149,38 @@ def add():
 	return redirect('/')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET','POST'])
 def login():
-	username = request.form['username']
-	password = request.form['password']
+
+	#username = request.form['username']
+	#password = request.form['password']
 	#params = {}
 	## double check account table !
 	#params["username"] = username
 	#params["password"] = password
-	select_query = "SELECT * from account"
-	g.conn.execute(text(select_query))
-
+	#select_query = "SELECT * from account"
+	#cursor = g.conn.execute(text(select_query))
+	#names = []
+	#for result in cursor:
+		#names.append(result)# result[0]
+		#if result[1] == username:
+			#if result[0] == password:
+				# do login stuff
+			#	pass
+			#else:
+				# bad login -> usernames are unique based off our logic in register
+				# yet to implement but won't allow registation with the same username 
+				#break 
+		#else:
+			#pass
+	#cursor.close()
 	return render_template('auth/login.html')
-@app.route('/register')
+@app.route('/register', methods=['GET','POST'])
 def register():
+	username = request.form['username']
+	password = request.form['password']
+	firstname = request.form['firstname']
+	lastname = request.form['lastname']
 	return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
