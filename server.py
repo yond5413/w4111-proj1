@@ -173,10 +173,6 @@ def login():
 					session['account_type'] = getAccountType(session['user_id'])
 					session['logged_in'] = True
 					session['first_login'] = False
-					# account_type->
-					## find which account it is and move to that template
-					## session object can store stuff like a dictionary if needed
-					## add some of the session object instances to help keep track of info
 				else:
 					# bad login -> usernames are unique based off our logic in register
 					# yet to implement but won't allow registation with the same username 
@@ -210,18 +206,44 @@ def register():
 			conn.commit()
     		conn.close()
 			'''
-			#insert_query = ""
+			#session['user_id'] = getAccountId()#result[0]
+			session['username'] = username
+			session['password'] = password
+			session['firstname']= firstname #result[3]
+			session['lastname'] = lastname #result[4]
+			session['account_type'] = account#getAccountType(session['user_id'])
 			session['logged_in'] = True
 			session['first_login'] = True
 			# add whatever to go to 
+			# based on account_type
+			# # first login lets us know whether to update attributes for specific cases later
+			insert_query1 = 'Insert INTO '
+			insert_query2 = ' (username,password,firstname,lastname) VALUES(?,?,?,?)'
+			g.conn.execute(text(insert_query1+account+insert_query2),username = username,
+		  	password = password, firstname = firstname, lastname = lastname)
+			## do this after insertion
+			## need to add auto-increment to accounts table it would make our lives much easier
+			session['user_id'] = getAccountId()#result[0]
+			if account == 'seller':
+				#might change to redirect (/consumer)
+				return render_template('accounts/seller.html')
+			elif account == 'consumer':
+				#might change to redirect (/consumer)
+				return render_template('accounts/consumer.html')
 		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
-	### might not need an html file lol
 	'''
+	#general way of doing a loggout using session object 
 	session.pop('user_id', None)
     session.pop('user_type', None)
     session['logged_in'] = False
+	'''
+	####################################
+	'''
+	## can pop keys in this manner too 
+	for key in list(session.keys()):
+    session.pop(key, None)
 	'''
 	return redirect("/")
 
@@ -292,7 +314,11 @@ def getAccountType(id):
 			return consumer
 def getAccountId():
 	## return last id because it is the newest
-	pass
+	# done after a new entry 
+	select_query = "SELECT * FROM account"
+	cursor = g.conn.execute(text(select_query))
+	ret = cursor[-1][0]
+	return ret
 if __name__ == "__main__":
 	import click
 
