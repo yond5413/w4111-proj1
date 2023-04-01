@@ -173,6 +173,12 @@ def login():
 					session['account_type'] = getAccountType(session['user_id'])
 					session['logged_in'] = True
 					session['first_login'] = False
+					if session['account_type'] == 'admin':
+						return redirect('/admin')
+					elif session['account_type'] == 'seller':
+						return redirect('/seller')
+					elif session['account_type'] == 'consumer':
+						return redirect('/consumer')
 				else:
 					# bad login -> usernames are unique based off our logic in register
 					# yet to implement but won't allow registation with the same username 
@@ -226,10 +232,10 @@ def register():
 			session['user_id'] = getAccountId()#result[0]
 			if account == 'seller':
 				#might change to redirect (/consumer)
-				return render_template('accounts/seller.html')
+				return  redirect('/seller')#render_template('accounts/seller.html')
 			elif account == 'consumer':
 				#might change to redirect (/consumer)
-				return render_template('accounts/consumer.html')
+				return redirect('/consumer')#render_template('accounts/consumer.html')
 		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
@@ -247,6 +253,24 @@ def logout():
 	'''
 	return redirect("/")
 
+@app.route('/admin', methods=['GET','POST'])
+def admin():
+	if request.method == 'GET':
+		return render_template('accounts/admin.html')
+	elif request.method == 'POST':
+		pass
+@app.route('/consumer', methods=['GET','POST'])
+def consumer():
+	if request.method == 'GET':
+		return render_template('accounts/consumer.html')
+	elif request.method == 'POST':
+		pass
+@app.route('/seller', methods=['GET','POST'])
+def seller():
+	if request.method == 'GET':
+		return render_template('accounts/seller.html')
+	elif request.method == 'POST':
+		pass
 ### some helper functions
 def getAccountType(accountId):
 	## used for login
