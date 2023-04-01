@@ -1,4 +1,3 @@
-
 """
 Columbia's COMS W4111.001 Introduction to Databases
 Example Webserver
@@ -121,7 +120,7 @@ def another():
 	# example of a database query
 	#
 	#select_query = "SELECT name from test"
-	select_query = "SELECT * from admin"
+	select_query = "SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	names = []
 	for result in cursor:
@@ -160,14 +159,21 @@ def login():
 		#params["password"] = password
 		select_query = "SELECT * FROM account"
 		cursor = g.conn.execute(text(select_query))
-		#names = []
 		for result in cursor:
-		#names.append(result)# result[0]
 			if result[1] == username:
 				if result[2] == password:
 				# do login stuff
 					flash("Login valid please wait shortly...")
 					cursor.close()
+					session['user_id'] = result[0]
+					session['username'] = username
+					session['password'] = password
+					session['firstname'] = result[3]
+					session['lastname'] = result[4]
+					session['account_type'] = getAccountType(session['user_id'])
+					session['logged_in'] = True
+					session['first_login'] = False
+					# account_type->
 					## find which account it is and move to that template
 					## session object can store stuff like a dictionary if needed
 					## add some of the session object instances to help keep track of info
@@ -197,11 +203,26 @@ def register():
 			#### some insert statements and stuff 
 			#### need to edit schema so id is account_id is incremented
 			####
-			pass
+			'''
+			name = request.form['name']
+    		age = request.form['age']
+    		c.execute("INSERT INTO users (name, age) VALUES (?, ?)", (name, age))
+			conn.commit()
+    		conn.close()
+			'''
+			#insert_query = ""
+			session['logged_in'] = True
+			session['first_login'] = True
+			# add whatever to go to 
 		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
 	### might not need an html file lol
+	'''
+	session.pop('user_id', None)
+    session.pop('user_type', None)
+    session['logged_in'] = False
+	'''
 	return redirect("/")
 
 ### some helper functions
@@ -237,8 +258,41 @@ def checkUsername(username):
 	result =  g.conn.execute(text(select_query))
 	for user in result:
 		if user == username:
+			result.close()
 			return False
+	result.close()
 	return True
+def getAccountType(id):
+	### get account type for login 
+	select_query = "SELECT username FROM "
+	##### account type ######
+	admin = 'admin'
+	seller = 'seller'
+	consumer = 'consumer'
+	#########################
+	result =  g.conn.execute(text(select_query+admin))
+	for user in result:
+		if user[0] == id:
+			####
+			result.close()
+			return admin
+	###################################
+	result =  g.conn.execute(text(select_query+seller))
+	for user in result:
+		if user[0] == id:
+			####
+			result.close()
+			return seller
+	##################################
+	result =  g.conn.execute(text(select_query+consumer))
+	for user in result:
+		if user[0] == id:
+			####
+			result.close()
+			return consumer
+def getAccountId():
+	## return last id because it is the newest
+	pass
 if __name__ == "__main__":
 	import click
 
