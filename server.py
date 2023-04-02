@@ -244,13 +244,14 @@ def approve_sellers():
 		return redirect('/')
 	if request.method == 'GET':
 		return render_template()
-app.route('/admin/approve-sales-requests', methods=['GET','POST'])
-def approve_sales_requests():
+#approve_sales_requests
+@app.route('/admin/approve-sale-request', methods=['GET','POST'])
+def approve_sale_request():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
 		return render_template()
-app.route('/admin/view-orders', methods=['GET','POST'])
+@app.route('/admin/view-orders', methods=['GET','POST'])
 def view_orders():
 	if session['account_type'] != 'admin':
 		return redirect('/')

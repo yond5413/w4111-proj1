@@ -1,17 +1,18 @@
-
 {%extends 'base.html'%}
 {% block header %}
   <h1>{% block title %}Admin{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <p> Welcome<p>
+  <p> Welcome <p>
     <!-- 
       Bunch of hyperlinks to access certain function essentially 
     -->
-    <p><a href="{{ url_for('approve_sales_requests') }}">Sales Requests</a></p>
-    <p><a href="{{ url_for('approve_sellers') }}">Approve Sellers</a></p>
-    <p><a href="{{ url_for('view-orders') }}">View Orders</a></p>
+    <ul>
+      <li><a href="{{ url_for('approve_sellers') }}">Approve Sellers</a></li>
+      <li><a href="{{ url_for('approve_sale_request') }}">Approve Sale Request</a></li>
+		  <li><a href="{{ url_for('view_orders') }}">View Orders</a></li>
+    </ul>
       
   
   {% endblock %}
