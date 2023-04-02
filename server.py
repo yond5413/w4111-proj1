@@ -17,7 +17,7 @@ tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 app.config['SECRET_KEY'] = 'mysecretkey'## standard practice to have secret key
 
-#
+
 # The following is a dummy URI that does not connect to a valid database. You will need to modify it to connect to your Part 2 database in order to use the data.
 #
 # XXX: The URI should be in the format of: 
@@ -164,7 +164,6 @@ def login():
 					print('in login ')
 				# do login stuff
 					flash("Login valid please wait shortly...")
-					
 					session['user_id'] = result[0]
 					session['username'] = username
 					session['password'] = password
@@ -252,8 +251,9 @@ def logout():
 	for key in list(session.keys()):
     session.pop(key, None)
 	'''
+	session.clear()
 	return redirect("/")
-
+###
 @app.route('/admin', methods=['GET','POST'])
 def admin():
 	if request.method == 'GET':
@@ -273,6 +273,29 @@ def seller():
 	elif request.method == 'POST':
 		pass
 ### some helper functions
+@app.before_request
+def user_in_session():
+	user_id = session.get('user_id')
+	if user_id is None:
+		g.user = None
+	else:
+		g.user = list()
+		for key in list(session.keys()):
+			g.user.append(session.get(key))
+'''
+can be used 
+as @login_required after app rout....
+
+def login_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for('auth.login'))
+
+        return view(**kwargs)
+
+    return wrapped_view
+'''
 def getAccountType(accountId):
 	## used for login
 	## essentially itterate accross each table and see if id is in table
