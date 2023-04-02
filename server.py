@@ -174,7 +174,6 @@ def login():
 					session['first_login'] = False
 					cursor.close()
 					if session['account_type'] == 'admin':
-						print('in admin')
 						return redirect('/admin')
 					elif session['account_type'] == 'seller':
 						return redirect('/seller')
@@ -256,6 +255,7 @@ def logout():
 ###
 @app.route('/admin', methods=['GET','POST'])
 def admin():
+	print('hello')
 	if request.method == 'GET':
 		return render_template('accounts/admin.html')
 	elif request.method == 'POST':
