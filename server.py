@@ -88,7 +88,6 @@ def index():
 
 	See its API: https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data
 	"""
-
 	# DEBUG: this is debugging code to see what request looks like
 	print(request.args)
 	#
@@ -130,21 +129,18 @@ def another():
 	context = dict(data = names)
 	return render_template("GivenByProf/index.html",**context)#render_template("GivenByProf/another.html")
 
-
 # Example of adding new data to the database
 # from what the prof showed 
 @app.route('/add', methods=['POST'])
 def add():
 	# accessing form inputs from user
 	name = request.form['name']
-	
 	# passing params in for each variable into query
 	params = {}
 	params["new_name"] = name
 	g.conn.execute(text('INSERT INTO test(name) VALUES (:new_name)'), params)
 	g.conn.commit()
 	return redirect('/')
-
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -161,10 +157,14 @@ def login():
 		cursor = g.conn.execute(text(select_query))
 		for result in cursor:
 			if result[1] == username:
+				print('valid username ')
+				print(password)
+				print(result[2])
 				if result[2] == password:
+					print('in login ')
 				# do login stuff
 					flash("Login valid please wait shortly...")
-					cursor.close()
+					
 					session['user_id'] = result[0]
 					session['username'] = username
 					session['password'] = password
@@ -173,7 +173,9 @@ def login():
 					session['account_type'] = getAccountType(session['user_id'])
 					session['logged_in'] = True
 					session['first_login'] = False
+					cursor.close()
 					if session['account_type'] == 'admin':
+						print('in admin')
 						return redirect('/admin')
 					elif session['account_type'] == 'seller':
 						return redirect('/seller')
@@ -187,7 +189,6 @@ def login():
 		#print("DID a run through lol")
 		flash('Invalid login info please try again.')
 		return redirect('/login')#render_template('auth/login.html')
-
 @app.route('/register', methods=['GET','POST'])
 def register():
 	if request.method == 'GET':
@@ -310,27 +311,30 @@ def checkUsername(username):
 	return True
 def getAccountType(id):
 	### get account type for login 
-	select_query = "SELECT username FROM "
+	select_query1 = "SELECT * FROM admin"
+	select_query2 = "SELECT * FROM consumer"
+	select_query3 = "SELECT * FROM seller"
 	##### account type ######
 	admin = 'admin'
 	seller = 'seller'
 	consumer = 'consumer'
 	#########################
-	result =  g.conn.execute(text(select_query+admin))
+	result =  g.conn.execute(text(select_query1))
 	for user in result:
 		if user[0] == id:
 			####
+			print("success")
 			result.close()
 			return admin
 	###################################
-	result =  g.conn.execute(text(select_query+seller))
+	result =  g.conn.execute(text(select_query3))
 	for user in result:
 		if user[0] == id:
 			####
 			result.close()
 			return seller
 	##################################
-	result =  g.conn.execute(text(select_query+consumer))
+	result =  g.conn.execute(text(select_query2))
 	for user in result:
 		if user[0] == id:
 			####
