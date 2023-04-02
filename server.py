@@ -79,38 +79,11 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-	"""
-	request is a special object that Flask provides to access web request information:
-
-	request.method:   "GET" or "POST"
-	request.form:     if the browser submitted a form, this contains the data in the form
-	request.args:     dictionary of URL arguments, e.g., {a:1, b:2} for http://localhost?a=1&b=2
-
-	See its API: https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data
-	"""
-	# DEBUG: this is debugging code to see what request looks like
-	print(request.args)
-	#
-	# example of a database query
-	#
-	#select_query = "SELECT name from test"
-	select_query = "SELECT * from admin"
-	cursor = g.conn.execute(text(select_query))
-	names = []
-	for result in cursor:
-		names.append(result[1])# result[0]
-	cursor.close()
 	
-	context = dict(data = names)
-	return render_template("proj1/index.html",)#render_template("GivenByProf/index.html", **context)
-#
-# This is an example of a different path.  You can see it at:
-# 
-#     localhost:8111/another
-#
-# Notice that the function name is another() rather than index()
-# The functions for each app.route need to have different names
-#
+	return render_template("proj1/index.html",)
+
+#should delete before submitting 
+#Only have it to view db stuff without going to the google cloud tbh
 @app.route('/another')
 def another():
 	# DEBUG: this is debugging code to see what request looks like
@@ -128,19 +101,6 @@ def another():
 	
 	context = dict(data = names)
 	return render_template("GivenByProf/index.html",**context)#render_template("GivenByProf/another.html")
-
-# Example of adding new data to the database
-# from what the prof showed 
-@app.route('/add', methods=['POST'])
-def add():
-	# accessing form inputs from user
-	name = request.form['name']
-	# passing params in for each variable into query
-	params = {}
-	params["new_name"] = name
-	g.conn.execute(text('INSERT INTO test(name) VALUES (:new_name)'), params)
-	g.conn.commit()
-	return redirect('/')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -173,6 +133,7 @@ def login():
 					session['logged_in'] = True
 					session['first_login'] = False
 					cursor.close()
+					
 					if session['account_type'] == 'admin':
 						return redirect('/admin')
 					elif session['account_type'] == 'seller':
@@ -180,11 +141,8 @@ def login():
 					elif session['account_type'] == 'consumer':
 						return redirect('/consumer')
 				else:
-					# bad login -> usernames are unique based off our logic in register
-					# yet to implement but won't allow registation with the same username 
 					break 
 		cursor.close()
-		#print("DID a run through lol")
 		flash('Invalid login info please try again.')
 		return redirect('/login')#render_template('auth/login.html')
 @app.route('/register', methods=['GET','POST'])
@@ -255,11 +213,13 @@ def logout():
 ###
 @app.route('/admin', methods=['GET','POST'])
 def admin():
-	print('hello')
+	## add some stuff to index when user is logged in 
+	if session['account_type'] != 'admin':
+		return redirect('/')
 	if request.method == 'GET':
 		return render_template('accounts/admin.html')
-	elif request.method == 'POST':
-		pass
+	#elif request.method == 'POST':
+		
 @app.route('/consumer', methods=['GET','POST'])
 def consumer():
 	if request.method == 'GET':
@@ -272,6 +232,37 @@ def seller():
 		return render_template('accounts/seller.html')
 	elif request.method == 'POST':
 		pass
+# for index or url: '/' add a top ten list of popular items when not logged and a prompt to login/reg
+# to see full stuff later
+#will add html files and etc 
+# basically just bneed to have option to scroll through request/products 
+#try and make others account types in a similar structure
+##### admin functons here ###########
+@app.route('/admin/apporve-sellers', methods=['GET','POST'])
+def approve_sellers():
+	if session['account_type'] != 'admin':
+		return redirect('/')
+	if request.method == 'GET':
+		return render_template()
+app.route('/admin/approve-sales-requests', methods=['GET','POST'])
+def approve_sales_requests():
+	if session['account_type'] != 'admin':
+		return redirect('/')
+	if request.method == 'GET':
+		return render_template()
+app.route('/admin/view-orders', methods=['GET','POST'])
+def view_orders():
+	if session['account_type'] != 'admin':
+		return redirect('/')
+	if request.method == 'GET':
+		return render_template()
+####################################
+####### seller functons here #######
+#
+####################################
+###### consumer functons here ######
+#
+####################################
 ### some helper functions
 @app.before_request
 def user_in_session():
@@ -282,20 +273,6 @@ def user_in_session():
 		g.user = list()
 		for key in list(session.keys()):
 			g.user.append(session.get(key))
-'''
-can be used 
-as @login_required after app rout....
-
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.login'))
-
-        return view(**kwargs)
-
-    return wrapped_view
-'''
 def getAccountType(accountId):
 	## used for login
 	## essentially itterate accross each table and see if id is in table

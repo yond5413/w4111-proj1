@@ -1,17 +1,17 @@
-{% extends 'account.html' %}
 
+{%extends 'base.html'%}
 {% block header %}
   <h1>{% block title %}Admin{% endblock %}</h1>
 {% endblock %}
-<!---{% block content %}
-  <form method="post">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Log In">
-  </form>
--->
-  <!-- can add forget password stuff later ig -->
-  <!-- maybe in part 4 if we run out of time -->
-<!--{% endblock %}-->
+
+{% block content %}
+  <p> Welcome<p>
+    <!-- 
+      Bunch of hyperlinks to access certain function essentially 
+    -->
+    <p><a href="{{ url_for('approve_sales_requests') }}">Sales Requests</a></p>
+    <p><a href="{{ url_for('approve_sellers') }}">Approve Sellers</a></p>
+    <p><a href="{{ url_for('view-orders') }}">View Orders</a></p>
+      
+  
+  {% endblock %}

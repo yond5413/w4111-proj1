@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Posts{% endblock %}</h1>
+  <h1>{% block title %}Welcome To COMS 4111 Ecomerce Shop{% endblock %}</h1>
   {% if g.user %}
   <p> Hello</p>
-  
+  {% else%}
+  <p> Please login if you would like to access some of the features</p>
   {% endif %}
 {% endblock %}
 

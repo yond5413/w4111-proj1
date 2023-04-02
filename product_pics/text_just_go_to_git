@@ -1,0 +1,2 @@
+We will use a directory strucuture like this to access product pics
+when we change the schema change from blob/whatever-> varchar so we can add it 
