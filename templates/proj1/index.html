@@ -3,20 +3,21 @@
 {% block header %}
   <h1>{% block title %}Posts{% endblock %}</h1>
   {% if g.user %}
-    <a class="action" href="{{ url_for('blog.create') }}">New</a>
+  <p> Hello</p>
+  
   {% endif %}
 {% endblock %}
 
 {% block content %}
-  {% for post in posts %}
-  <!--
+ <!-- {% for post in posts %}
+  
     Must be edited using a template from flask site here 
     --->  
     <!--
       I am thinking just have a welocme message and a hyperlink to the html file that their account is linked too 
 
     -->
-  <article class="post">
+  <!--<article class="post">
       <header>
         <div>
           <h1>{{ post['title'] }}</h1>
@@ -31,5 +32,5 @@
     {% if not loop.last %}
       <hr>
     {% endif %}
-  {% endfor %}
+  {% endfor %}-->
 {% endblock %}
