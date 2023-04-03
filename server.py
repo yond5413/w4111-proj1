@@ -332,6 +332,84 @@ def seller_view_orders():
 ####################################
 ###### consumer functons here ######
 #
+@app.route('/consumer/view_products', methods=['GET','POST'])
+def view_products():
+    if request.method == 'GET':
+        select_query = "Select * from products"
+        cursor = g.conn.execute(text(select_query))
+        products = list()
+        
+        for result in cursor:
+            prod = {}
+            prod["Name"] = result[2]
+            prod["Price"] = result[1]
+            prod["Category"] = result[3]
+            prod["Description"] = result[4]
+            prod["Popularity"] = result[5]
+            prod["Quantity"] = result[6]
+            prod["ID"] = result[0]
+            products.append(prod)
+        
+        return render_template('function/consumer/view_products.html', prods=products)
+    if request.method == 'POST':
+        userid = session['user_id']
+        prodid = request.form['prod_id']
+        if 'cart' in request.form:
+            update_query = ''
+            g.conn.execute(text(update_query))
+            #add to shopping list table
+        elif 'order' in request.form:
+            update_query = ''
+            g.conn.execute(text(update_query))
+            #add to orders table
+
+@app.route('/consumer/shopping_cart', methods=['GET', 'POST'])
+def shopping_cart():
+    userid = session['user_id']
+    if request.method == 'GET':
+        select_query = 'SELECT shopping_cart.product_id, name, price from shopping_cart,products where customer_id = ' + userid + ' and shopping_cart.product_id = products.product_id'
+        cursor = g.conn.execute(text(select_query))
+        products = list()
+
+        for result in cursor:
+            prod = {}
+            prod["Name"] = result[1]
+            prod["Price"] = result[2]
+            prod["ID"] = result[0]
+            products.append(prod)
+        
+        return render_template('function/consumer/shopping_cart.html', prods=products)  
+    if request.method == 'POST':
+        userid = session['user_id']
+        prodid = request.form['prod_id']
+        if 'remove' in request.form:
+            update_query = ''
+            g.conn.execute(text(update_query))
+            #remove from shopping list table
+        elif 'order' in request.form:
+            update_query = ''
+            g.conn.execute(text(update_query))
+            #add to orders table
+            #remove from shopping list table
+
+@app.route('/consumer/view_cust_orders', methods=['GET', 'POST'])
+def view_cust_orders():
+    userid = session['user_id']
+    if request.method == 'GET':
+        select_query = 'SELECT order.product_id, name, price, date_time, delivery_address from order, product where customer_id = ' + userid + ' and order.product_id = products.product_id'
+        cursor = g.conn.execute(text(select_query))
+        orders = list()
+
+        for result in cursor:
+            ord = {}
+            ord['name'] = result[1]
+            ord['price'] = result[2]
+            ord['time'] = result[3]
+            ord['address'] = result[4]
+            orders.append(ord)
+        
+        return render_template('function/consumer/view_cust_orders.html', ords=orders)
+
 ####################################
 ### some helper functions
 @app.before_request
