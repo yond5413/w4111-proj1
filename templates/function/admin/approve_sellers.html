@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="scrollable">
+    <ul class="list-group">
+    <h>List of seller awaiting approval</h>  
+    {% for seller in sellers %}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-0">{{ seller['first_name'] }}, {{ seller['last_name'] }}</h5>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Create the dynamic HTML table -->
+    <form action="{{ url_for('approve_sellers') }}" method="post">
+    <select name="account_id">
+      {% for seller in sellers %}
+        <option value="{{ seller['account_id'] }}">{{ seller['first_name'] }}, {{ seller['last_name'] }}</option>
+      {% endfor %}
+    <input type="submit" name =  approve value="Approve">  
+    <input type="submit" name = decline value="Decline">
+    
+  </form>
+
+{% endblock %}

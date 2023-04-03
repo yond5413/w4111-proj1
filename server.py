@@ -82,7 +82,7 @@ def index():
 	
 	return render_template("proj1/index.html",)
 
-#should delete before submitting 
+#should delete/commentout before submitting 
 #Only have it to view db stuff without going to the google cloud tbh
 @app.route('/another')
 def another():
@@ -92,7 +92,7 @@ def another():
 	# example of a database query
 	#
 	#select_query = "SELECT name from test"
-	select_query = "SELECT * from product"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
+	select_query = "SELECT * from seller"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	orders = []
 	for result in cursor:
@@ -240,15 +240,37 @@ def approve_sellers():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		return render_template('function/admin/approve_sellers.html')
+		select_query = "SELECT * from seller where included_status = false"
+		cursor = g.conn.execute(text(select_query))
+		sellers = []
+		for entry in cursor:
+			sel = {}
+			sel['account_id'] = entry[0]
+			sel["first_name"] = entry[3]
+			sel["last_name"] = entry[4]
+			sellers.append(sel)
+		#### add to table and then add option to approve 
+		# for post option?
+		return render_template('function/admin/approve_sellers.html',sellers = sellers)
 	if request.method == 'POST':
-		pass
-#approve_sales_requests
+		if 'approve' in request.form:
+			seller_id = request.form["account_id"]
+			##
+			# update seller/ added allow privelleges
+			return redirect("/admin")
+		elif 'decline' in request.form:
+			seller_id = request.form["account_id"]
+			##
+			# decline either delete account or resubmit? 
+			return redirect("/admin")
+		
 @app.route('/admin/approve-sale-request', methods=['GET','POST'])
 def approve_sale_request():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
+		select_query = "SELECT * FROM sale_request"
+		cursor = g.conn.execute(text(select_query))
 		return render_template('function/admin/approve_sale_request.html')
 	if request.method == 'POST':
 		pass
@@ -257,16 +279,15 @@ def view_orders():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		select_query = "SELECT * from orders order by orders.date_time"
+		select_query = "SELECT * FROM orders order by orders.date_time"
 		cursor = g.conn.execute(text(select_query))
 		orders = list()
 		for result in cursor:
 			ord = {}
 			## key:value pair will map to parts in html
 			## double check which is consumer-id and prod-id
-			
 			ord["Consumer"] = getOrderConsumername(result[2])
-			# add picture ig instead of id
+			# add picture ig instead of id later
 			ord['Product name'] = getOrderProductname(result[1]) 
 			ord['Order Time'] = result[3] ## date time object need to format properly
 			ord['Address'] = result[4]
@@ -274,7 +295,11 @@ def view_orders():
 			orders.append(ord)
 		return render_template('function/admin/view_orders.html', orders = orders)
 	if request.method == 'POST':
-		pass
+		if 'button1' in request.form:           
+			prod_id = request.form['button1']
+		elif 'button2' in request.form:	
+            # handle button2 click
+			prod_id = request.form['button2']
 ####################################
 ####### seller functons here #######
 #
