@@ -92,9 +92,10 @@ def another():
 	# example of a database query
 	#
 	#select_query = "SELECT name from test"
-	select_query = "SELECT * from seller"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
+	select_query = "SELECT * FROM sale_request WHERE request_status = false"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	orders = []
+	print(cursor.keys()[0])# prints collumn names
 	for result in cursor:
 		orders.append(result)# result[0]
 	cursor.close()
@@ -269,11 +270,29 @@ def approve_sale_request():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		select_query = "SELECT * FROM sale_request"
+		select_query = "SELECT * FROM sale_request WHERE request_status = false"
 		cursor = g.conn.execute(text(select_query))
-		return render_template('function/admin/approve_sale_request.html')
+		sale_req = []
+		print(cursor.keys())
+		for entry in cursor:
+			# salereq: column info below
+			#['sale_id', 'stock', 'price', 'category', 'description', 'image', 'request_status', 'seller_id', 'name']
+			salreq = {}
+			salreq['account_id'] = entry[0]
+			salreq["first_name"] = entry[3]
+			salreq["last_name"] = entry[4]
+			sale_req.append(salreq)
+		return render_template('function/admin/approve_sale_request.html', sale_request = sale_req)
 	if request.method == 'POST':
-		pass
+		if 'approve' in request.form:
+			#seller_id = request.form["account_id"]
+			## add to product table
+			# update seller/ added allow privelleges
+			return redirect("/admin")
+		elif 'decline' in request.form:
+			#seller_id = request.form["account_id"]
+			# throw out
+			return redirect("/admin")
 @app.route('/admin/view-orders', methods=['GET','POST'])
 def view_orders():
 	if session['account_type'] != 'admin':
@@ -303,6 +322,9 @@ def view_orders():
 ####################################
 ####### seller functons here #######
 #
+@app.route('/seller/view-orders', methods=['GET','POST'])
+def seller_view_orders():
+	pass
 ####################################
 ###### consumer functons here ######
 #
