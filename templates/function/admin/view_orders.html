@@ -4,9 +4,21 @@
 <div class="scrollable">
     <ul>
       {% for order in orders %}
-      <li>{{ order['name'] }} - ${{ order['price'] }}</li>
+      <li> {{ order['Consumer'] }} ${{ order['Product name'] }} - ${{ order['Order Time'] }} 
+        - ${{ order['Address'] }}- ${{ order['Quantity'] }}
+      </li>
       {% endfor %}
     </ul>
   </div>
 
+  <!-- 
+ add <li> tag
+    another set of tags will be added 
+    ord["Consumer"] = getOrderConsumername(result[2])
+			# add picture ig instead of id
+			ord['Product name'] = getOrderProductname(result[1]) 
+			ord['Order Time'] = result[3] ## date time object need to format properly
+			ord['Address'] = result[4]
+			ord['Quantity'] = result[5]
+-->
 {% endblock %}

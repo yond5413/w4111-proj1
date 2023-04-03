@@ -94,12 +94,12 @@ def another():
 	#select_query = "SELECT name from test"
 	select_query = "SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
-	names = []
+	orders = []
 	for result in cursor:
-		names.append(result)# result[0]
+		orders.append(result)# result[0]
 	cursor.close()
 	
-	context = dict(data = names)
+	context = dict(data = orders)
 	return render_template("GivenByProf/index.html",**context)#render_template("GivenByProf/another.html")
 
 @app.route('/login', methods=['GET','POST'])
@@ -257,9 +257,22 @@ def view_orders():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		select_query = "SELECT * from orders"
+		select_query = "SELECT * from orders order by orders.date_time"
 		cursor = g.conn.execute(text(select_query))
-		return render_template('function/admin/view_orders.html')
+		orders = list()
+		for result in cursor:
+			ord = {}
+			## key:value pair will map to parts in html
+			## double check which is consumer-id and prod-id
+			print(type(result[2]))
+			ord["Consumer"] = getOrderConsumername(result[2])
+			# add picture ig instead of id
+			ord['Product name'] = getOrderProductname(result[1]) 
+			ord['Order Time'] = result[3] ## date time object need to format properly
+			ord['Address'] = result[4]
+			ord['Quantity'] = result[5]
+			orders.append(ord)
+		return render_template('function/admin/view_orders.html', orders = orders)
 	if request.method == 'POST':
 		pass
 ####################################
@@ -353,9 +366,23 @@ def getAccountId():
 	cursor = g.conn.execute(text(select_query))
 	ret = cursor[-1][0]
 	return ret
-
-
-
+def getOrderProductname(product_id):
+	select_query = ""
+def getOrderConsumername(consumer_id):
+	#################################
+	# get Consumer First and last name 
+	# %s must be use instead of ? for these queries it seems
+	select_query ='SELECT first_name, last_name FROM consumer WHERE account_id = (?)'#"SELECT first_name,last_name FROM consumer WHERE account_id = %s"
+	cursor = g.conn.execute(text(select_query),[(consumer_id,)])
+	names = cursor.fetchone()
+	cursor.close()
+	if cursor is None:
+		## should never happen but just error checking
+		print("Not found")
+		ret = names[0] +' '+ names[1] 
+		return ret
+	else:
+		return cursor
 if __name__ == "__main__":
 	import click
 
