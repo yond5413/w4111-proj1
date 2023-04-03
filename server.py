@@ -92,7 +92,7 @@ def another():
 	# example of a database query
 	#
 	#select_query = "SELECT name from test"
-	select_query = "SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
+	select_query = "SELECT * from product"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	orders = []
 	for result in cursor:
@@ -367,14 +367,21 @@ def getAccountId():
 	ret = cursor[-1][0]
 	return ret
 def getOrderProductname(product_id):
-	select_query = ""
+	select_query = "SELECT name FROM product WHERE product_id = :prod_id"
+	params = {'prod_id': product_id}
+	result = g.conn.execute(text(select_query), params)
+	names = result.fetchone()#cursor.fetchone()
+	result.close()#cursor.close()
+	if result is None:#if cursor is None:
+		## should never happen but just error checking
+		print("Not found")
+		ret = result		
+		return ret
+	else:
+		ret = names[0]
+		return ret#cursor
 def getOrderConsumername(consumer_id):
 	#################################
-	# get Consumer First and last name 
-	# %s must be use instead of ? for these queries it seems
-	#select_query ='SELECT first_name, last_name FROM consumer WHERE account_id = :id'#'SELECT first_name, last_name FROM consumer WHERE account_id = ?'#"SELECT first_name,last_name FROM consumer WHERE account_id = %s"
-	#params = {'id': consumer_id}
-	#cursor = g.conn.execute(text(select_query), id = consumer_id)#g.conn.execute(text(select_query), [(consumer_id,)])#cursor = g.conn.execute(text(select_query),[(consumer_id,)])
 	select_query = 'SELECT first_name, last_name FROM consumer WHERE account_id = :con_id'
 	params = {'con_id': consumer_id}
 	result = g.conn.execute(text(select_query), params)
