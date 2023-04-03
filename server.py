@@ -264,7 +264,7 @@ def view_orders():
 			ord = {}
 			## key:value pair will map to parts in html
 			## double check which is consumer-id and prod-id
-			print(type(result[2]))
+			
 			ord["Consumer"] = getOrderConsumername(result[2])
 			# add picture ig instead of id
 			ord['Product name'] = getOrderProductname(result[1]) 
@@ -372,17 +372,22 @@ def getOrderConsumername(consumer_id):
 	#################################
 	# get Consumer First and last name 
 	# %s must be use instead of ? for these queries it seems
-	select_query ='SELECT first_name, last_name FROM consumer WHERE account_id = (?)'#"SELECT first_name,last_name FROM consumer WHERE account_id = %s"
-	cursor = g.conn.execute(text(select_query),[(consumer_id,)])
-	names = cursor.fetchone()
-	cursor.close()
-	if cursor is None:
+	#select_query ='SELECT first_name, last_name FROM consumer WHERE account_id = :id'#'SELECT first_name, last_name FROM consumer WHERE account_id = ?'#"SELECT first_name,last_name FROM consumer WHERE account_id = %s"
+	#params = {'id': consumer_id}
+	#cursor = g.conn.execute(text(select_query), id = consumer_id)#g.conn.execute(text(select_query), [(consumer_id,)])#cursor = g.conn.execute(text(select_query),[(consumer_id,)])
+	select_query = 'SELECT first_name, last_name FROM consumer WHERE account_id = :con_id'
+	params = {'con_id': consumer_id}
+	result = g.conn.execute(text(select_query), params)
+	names = result.fetchone()#cursor.fetchone()
+	result.close()#cursor.close()
+	if result is None:#if cursor is None:
 		## should never happen but just error checking
 		print("Not found")
-		ret = names[0] +' '+ names[1] 
+		ret = result		
 		return ret
 	else:
-		return cursor
+		ret = names[0] +' '+ names[1] 
+		return ret#cursor
 if __name__ == "__main__":
 	import click
 
