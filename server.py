@@ -243,20 +243,20 @@ def approve_sellers():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		return render_template()
+		return render_template('function/admin/approve_sellers.html')
 #approve_sales_requests
 @app.route('/admin/approve-sale-request', methods=['GET','POST'])
 def approve_sale_request():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		return render_template()
+		return render_template('function/admin/approve_sale_request.html')
 @app.route('/admin/view-orders', methods=['GET','POST'])
 def view_orders():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
-		return render_template()
+		return render_template('function/admin/view_orders.html')
 ####################################
 ####### seller functons here #######
 #
