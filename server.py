@@ -79,7 +79,7 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-	
+	print(g.user["account_type"])
 	return render_template("proj1/index.html",)
 
 #should delete/commentout before submitting 
@@ -277,10 +277,13 @@ def approve_sale_request():
 		for entry in cursor:
 			# salereq: column info below
 			#['sale_id', 'stock', 'price', 'category', 'description', 'image', 'request_status', 'seller_id', 'name']
+			# name-> product/sale-request: name
 			salreq = {}
-			salreq['account_id'] = entry[0]
-			salreq["first_name"] = entry[3]
-			salreq["last_name"] = entry[4]
+			salreq['sale_id'] = entry[0]
+			salreq["price"] = entry[2]
+			salreq['category'] = entry[3]
+			salreq['description'] =  entry[4]
+			salreq['name'] = entry[8]
 			sale_req.append(salreq)
 		return render_template('function/admin/approve_sale_request.html', sale_request = sale_req)
 	if request.method == 'POST':
@@ -324,7 +327,8 @@ def view_orders():
 #
 @app.route('/seller/view-orders', methods=['GET','POST'])
 def seller_view_orders():
-	pass
+	if session['account_type'] != 'seller':
+		return redirect('/')
 ####################################
 ###### consumer functons here ######
 #
@@ -336,9 +340,9 @@ def user_in_session():
 	if user_id is None:
 		g.user = None
 	else:
-		g.user = list()
-		for key in list(session.keys()):
-			g.user.append(session.get(key))
+		g.user =dict(zip(session.keys(), session.values()))# list()
+		#for key in list(session.keys()):
+		#	g.user.append(session.get(key))
 def getAccountType(accountId):
 	## used for login
 	## essentially itterate accross each table and see if id is in table

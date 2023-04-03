@@ -3,35 +3,23 @@
 {% block header %}
   <h1>{% block title %}Welcome To COMS 4111 Ecomerce Shop{% endblock %}</h1>
   {% if g.user %}
-  <p> Hello</p>
+  <p> Hello </p>
   {% else%}
   <p> Please login if you would like to access some of the features</p>
   {% endif %}
 {% endblock %}
 
 {% block content %}
- <!-- {% for post in posts %}
-  
-    Must be edited using a template from flask site here 
-    --->  
-    <!--
-      I am thinking just have a welocme message and a hyperlink to the html file that their account is linked too 
-
-    -->
-  <!--<article class="post">
-      <header>
-        <div>
-          <h1>{{ post['title'] }}</h1>
-          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
-        {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-        {% endif %}
-      </header>
-      <p class="body">{{ post['body'] }}</p>
-    </article>
-    {% if not loop.last %}
-      <hr>
+    {% if g.user['account_type'] == 'admin' %}
+    <p>You must have entered a page you do not have access to please access this link below </p>
+    <li><a href="{{ url_for('admin') }}">Admin page</a></li>
+    {% elif g.user['account_type'] == 'consumer' %}
+    <p>You must have entered a page you do not have access to please access this link below </p>
+    <li><a href="{{ url_for('consumer') }}">Consumer page</a></li>
+    {% elif g.user['account_type'] == 'seller' %}
+    <p>You must have entered a page you do not have access to please access this link below </p>
+    <li><a href="{{ url_for('seller') }}">Seller page</a></li>
+    {% else %}
+    <p>To login/register access the through links above</p>
     {% endif %}
-  {% endfor %}-->
 {% endblock %}
