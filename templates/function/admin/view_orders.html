@@ -1,1 +1,12 @@
 {% extends 'base.html' %}
+
+{%block content %}
+<div class="scrollable">
+    <ul>
+      {% for order in orders %}
+      <li>{{ order['name'] }} - ${{ order['price'] }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endblock %}

@@ -92,7 +92,7 @@ def another():
 	# example of a database query
 	#
 	#select_query = "SELECT name from test"
-	select_query = "SELECT * from account"#"SELECT * from admin"
+	select_query = "SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	names = []
 	for result in cursor:
@@ -109,10 +109,7 @@ def login():
 	elif request.method == 'POST':
 		username = request.form['username']
 		password = request.form['password']
-		#params = {}
-		## double check account table !
-		#params["username"] = username
-		#params["password"] = password
+		
 		select_query = "SELECT * FROM account"
 		cursor = g.conn.execute(text(select_query))
 		for result in cursor:
@@ -244,6 +241,8 @@ def approve_sellers():
 		return redirect('/')
 	if request.method == 'GET':
 		return render_template('function/admin/approve_sellers.html')
+	if request.method == 'POST':
+		pass
 #approve_sales_requests
 @app.route('/admin/approve-sale-request', methods=['GET','POST'])
 def approve_sale_request():
@@ -251,12 +250,18 @@ def approve_sale_request():
 		return redirect('/')
 	if request.method == 'GET':
 		return render_template('function/admin/approve_sale_request.html')
+	if request.method == 'POST':
+		pass
 @app.route('/admin/view-orders', methods=['GET','POST'])
 def view_orders():
 	if session['account_type'] != 'admin':
 		return redirect('/')
 	if request.method == 'GET':
+		select_query = "SELECT * from orders"
+		cursor = g.conn.execute(text(select_query))
 		return render_template('function/admin/view_orders.html')
+	if request.method == 'POST':
+		pass
 ####################################
 ####### seller functons here #######
 #
@@ -348,6 +353,9 @@ def getAccountId():
 	cursor = g.conn.execute(text(select_query))
 	ret = cursor[-1][0]
 	return ret
+
+
+
 if __name__ == "__main__":
 	import click
 
