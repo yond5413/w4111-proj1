@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  <ul>
+    <li><a href="{{ url_for('consumer') }}">Home</a></li>
+    <li><a href="{{ url_for('shopping_cart') }}">Shopping Cart</a></li>
+    <li><a href="{{ url_for('view_products') }}">Products</a></li>
+  </ul>
   <div class="scrollable">
     <ul class="list-group">
       {% for order in ords %}
       <li class="list-group-item">
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <h5 class="mb-0">{{ order['Name'] }}</h5>
+            <h5 class="mb-0">{{ order['name'] }}</h5>
             <p>{{ order['address'] }}, {{ order['time'] }}</p>
           </div>
-          <span class="badge badge-primary badge-pill"> {{ order['Price'] }}</span>
+          <span class="badge badge-primary badge-pill"> {{ order['price'] }}</span>
         </div>
       </li>
       {% endfor %}
