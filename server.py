@@ -12,6 +12,7 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, flash, session
+from datetime import datetime
 ## added flash and session will double check if these are fine
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -247,11 +248,16 @@ def approve_sellers():
 			seller_id = request.form["account_id"]
 			##
 			# update seller/ added allow privelleges
+			update_query = "UPDATE seller set included_status = true where account_id = " +str(seller_id)
+			cursor = g.conn.execute(text(update_query))
+			g.conn.commit()
 			return redirect("/admin")
 		elif 'decline' in request.form:
 			seller_id = request.form["account_id"]
 			##
-			# decline either delete account or resubmit? 
+			# decline either delete account or resubmit?
+			# DO nothing for part 3
+			#  
 			return redirect("/admin")
 		
 @app.route('/admin/approve-sale-request', methods=['GET','POST'])
@@ -277,13 +283,17 @@ def approve_sale_request():
 		return render_template('function/admin/approve_sale_request.html', sale_request = sale_req)
 	if request.method == 'POST':
 		if 'approve' in request.form:
-			#seller_id = request.form["account_id"]
+			seller_id = request.form["account_id"]
 			## add to product table
 			# update seller/ added allow privelleges
+			update_query = "UPDATE sale_request set request_status = true where seller_id = " +str(seller_id)
+			cursor = g.conn.execute(text(update_query))
+			g.conn.commit()
+			#### add to products
 			return redirect("/admin")
 		elif 'decline' in request.form:
 			#seller_id = request.form["account_id"]
-			# throw out
+			# do nothing
 			return redirect("/admin")
 		
 @app.route('/admin/view-orders', methods=['GET','POST'])
@@ -329,8 +339,10 @@ def make_request():
 		price = request.form['price']
 		description = request.form['description']
 		category = request.form['category']
-		name = request.form['stock']
+		name = request.form['name']
+		
 		#image = request.form['image'] #?
+		update_query = ""
 		return redirect("/seller")
 @app.route('/seller/view-requests', methods=['GET','POST'])
 def view_requests():
