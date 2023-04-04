@@ -164,10 +164,10 @@ def register():
 			####
 			'''
 			name = request.form['name']
-    		age = request.form['age']
-    		c.execute("INSERT INTO users (name, age) VALUES (?, ?)", (name, age))
+			age = request.form['age']
+			c.execute("INSERT INTO users (name, age) VALUES (?, ?)", (name, age))
 			conn.commit()
-    		conn.close()
+			conn.close()
 			'''
 			#session['user_id'] = getAccountId()#result[0]
 			session['username'] = username
@@ -180,19 +180,26 @@ def register():
 			# add whatever to go to 
 			# based on account_type
 			# # first login lets us know whether to update attributes for specific cases later
-			insert_query1 = 'Insert INTO '
-			insert_query2 = ' (username,password,firstname,lastname) VALUES(?,?,?,?)'
-			g.conn.execute(text(insert_query1+account+insert_query2),username = username,
-		  	password = password, firstname = firstname, lastname = lastname)
+			select_query = 'select count(*) from account'
+			cursor = g.conn.execute(text(select_query))
+			new_id = cursor.fetchone()[0]
+
+			
 			## do this after insertion
 			## need to add auto-increment to accounts table it would make our lives much easier
-			session['user_id'] = getAccountId()#result[0]
+			session['user_id'] = new_id
 			if account == 'seller':
 				#might change to redirect (/consumer)
-				return  redirect('/seller')#render_template('accounts/seller.html')
+				insert_query1 = 'Insert INTO seller (account_id, username, password, first_name, last_name) VALUES (' + str(new_id) + ',\'' + str(username) + '\',\'' + str(password) + '\',\'' + str(firstname) + '\',\'' + str(lastname) + '\')'
+				g.conn.execute(text(insert_query1))
+				g.conn.commit()
+				return  redirect('/')#render_template('accounts/seller.html')
 			elif account == 'consumer':
 				#might change to redirect (/consumer)
-				return redirect('/consumer')#render_template('accounts/consumer.html')
+				insert_query1 = 'Insert INTO consumer (account_id, username, password, first_name, last_name) VALUES (' + str(new_id) + ',\'' + str(username) + '\',\'' + str(password) + '\',\'' + str(firstname) + '\',\'' + str(lastname) + '\')'
+				g.conn.execute(text(insert_query1))
+				g.conn.commit()
+				return redirect('/')#render_template('accounts/consumer.html')
 		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
