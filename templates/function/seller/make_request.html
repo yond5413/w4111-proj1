@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="post">
+    <!--['sale_id', 'stock', 'price', 'category', 'description', 'image', 'request_status', 'seller_id', 'name']-->
+    <label for="name">Name</label>
+    <input name="name" id="name" required>
+    
+    <label for="price">Price</label>
+    <input name="price" id="price" required>
+    
+    <label for="stock">Stock</label>
+    <input name="stock" id="stock" required>
+    
+    <label for="category">Category</label>
+    <input name="category" id="category" required>
+    
+    <label for="description">Description</label>
+    <input name="description" id="description" required>
+    
+    <input type="submit" value="submit sale request">
+  </form>
+{% endblock %}

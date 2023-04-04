@@ -1,1 +1,16 @@
-{% extends 'account.html' %}
+{%extends 'base.html'%}
+{% block header %}
+  <h1>{% block title %}Seller{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <p> Welcome Seller! <p>
+    <!-- 
+    Bunch of hyperlinks to access certain function essentially 
+    -->
+    <ul>
+        <li><a href="{{ url_for('make_request') }}">Make Request</a></li>
+        <li><a href="{{ url_for('view_requests') }}">View Requests</a></li>
+       
+    </ul>
+{% endblock %}

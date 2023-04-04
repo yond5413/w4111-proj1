@@ -79,7 +79,7 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-	print(g.user["account_type"])
+	
 	return render_template("proj1/index.html",)
 
 #should delete/commentout before submitting 
@@ -92,10 +92,11 @@ def another():
 	# example of a database query
 	#
 	#select_query = "SELECT name from test"
-	select_query = "SELECT * FROM sale_request WHERE request_status = false"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
+	select_query = "SELECT * FROM seller"
+	#"SELECT * FROM sale_request WHERE request_status = false"#"SELECT * from orders"#"SELECT * from account"#"SELECT * from admin"
 	cursor = g.conn.execute(text(select_query))
 	orders = []
-	print(cursor.keys()[0])# prints collumn names
+	#print(cursor.keys()[0])# prints collumn names
 	for result in cursor:
 		orders.append(result)# result[0]
 	cursor.close()
@@ -131,7 +132,7 @@ def login():
 					session['logged_in'] = True
 					session['first_login'] = False
 					cursor.close()
-					
+
 					if session['account_type'] == 'admin':
 						return redirect('/admin')
 					elif session['account_type'] == 'seller':
@@ -194,18 +195,6 @@ def register():
 		return render_template('auth/register.html')
 @app.route('/logout')
 def logout():
-	'''
-	#general way of doing a loggout using session object 
-	session.pop('user_id', None)
-    session.pop('user_type', None)
-    session['logged_in'] = False
-	'''
-	####################################
-	'''
-	## can pop keys in this manner too 
-	for key in list(session.keys()):
-    session.pop(key, None)
-	'''
 	session.clear()
 	return redirect("/")
 ###
@@ -296,6 +285,7 @@ def approve_sale_request():
 			#seller_id = request.form["account_id"]
 			# throw out
 			return redirect("/admin")
+		
 @app.route('/admin/view-orders', methods=['GET','POST'])
 def view_orders():
 	if session['account_type'] != 'admin':
@@ -325,10 +315,50 @@ def view_orders():
 ####################################
 ####### seller functons here #######
 #
-@app.route('/seller/view-orders', methods=['GET','POST'])
-def seller_view_orders():
+@app.route('/seller/make-request', methods=['GET','POST'])
+def make_request():
 	if session['account_type'] != 'seller':
 		return redirect('/')
+	if request.method == "GET":
+		return render_template('function/seller/make_request.html')
+	if request.method == "POST":
+		######################
+		# salereq: column info below
+		#['sale_id', 'stock', 'price', 'category', 'description', 'image', 'request_status', 'seller_id', 'name']
+		stock = request.form['stock']
+		price = request.form['price']
+		description = request.form['description']
+		category = request.form['category']
+		name = request.form['stock']
+		#image = request.form['image'] #?
+		return redirect("/seller")
+@app.route('/seller/view-requests', methods=['GET','POST'])
+def view_requests():
+	if session['account_type'] != 'seller':
+		return redirect('/')
+	if request.method == "GET":
+		return render_template('function/seller/view_requests.html')
+	if request.method == "POST":
+		### access db
+		select_query = "SELECT *  FROM  sale_request WHERE seller_id = :seller"
+		params = {'seller': g.user["user_id"]}
+		cursor = g.conn.execute(text(select_query))
+		sale_req = []
+		print(cursor.keys())
+		for entry in cursor:
+			# salereq: column info below
+			#['sale_id', 'stock', 'price', 'category', 'description', 'image', 'request_status', 'seller_id', 'name']
+			# name-> product/sale-request: name
+			salreq = {}
+			salreq["price"] = entry[2]
+			salreq['category'] = entry[3]
+			salreq['description'] =  entry[4]
+			salreq['name'] = entry[8]
+			#sale_req['image'] = entry[5]
+			sale_req.append(salreq)
+		
+		return render_template('function/seller/view_requests.html',sale_request = sale_req)
+	
 ####################################
 ###### consumer functons here ######
 #
