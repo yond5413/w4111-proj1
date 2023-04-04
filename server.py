@@ -414,7 +414,7 @@ def view_products():
 			select_query2 = 'select count(*) from orders'
 			cursor = g.conn.execute(text(select_query2))
 			new_id = cursor.fetchone()[0]
-			update_query = 'INSERT into orders values (' + str(new_id) + ',' + str(prodid) + ',' + str(userid) + ',' + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ',' + str(address) + ')'
+			update_query = 'INSERT into orders values (' + str(new_id) + ',' + str(prodid) + ',' + str(userid) + ',\'' + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + '\',\'' + str(address) + '\')'
 			g.conn.execute(text(update_query))
 			return redirect('/consumer/view_products')
 
