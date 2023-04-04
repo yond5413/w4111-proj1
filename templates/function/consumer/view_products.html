@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  <ul>
+    <li><a href="{{ url_for('consumer') }}">Home</a></li>
+    <li><a href="{{ url_for('shopping_cart') }}">Shopping Cart</a></li>
+    <li><a href="{{ url_for('view_cust_orders') }}">Orders</a></li>
+  </ul>
   <div class="scrollable">
     <ul class="list-group">
       {% for product in prods %}
@@ -11,7 +16,7 @@
             <small class="text-muted">{{ product['Category'] }},{{ product['Quantity'] }},{{ product['Popularity'] }}</small> 
             <p> {{ product['Description'] }} </p>
           </div>
-          <span class="badge badge-primary badge-pill"> {{ order['Price'] }}</span>
+          <span class="badge badge-primary badge-pill"> {{ product['Price'] }}</span>
           <form action="{{ url_for('view_products') }}" method="post">
             <input type="hidden" name="prod_id" value="{{ product['ID'] }}">
             <input type="submit" name="cart" value="Add to cart">
