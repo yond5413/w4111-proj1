@@ -342,7 +342,13 @@ def make_request():
 		name = request.form['name']
 		
 		#image = request.form['image'] #?
-		update_query = ""
+		select_query= 'select count(*) from sale_request'
+		result = g.conn.execute(text(select_query))
+		new_id = result.fetchone()[0]
+		update_query = "Insert into sale_request(sale_id,stock,price,category,description,seller_id,name) values("+ str(new_id)+"," +str(stock)+","+str(price)+",\'" +str(category)+"\',\'"+str(description)+"\',"+ str(g.user["user_id"])+",\'" +str(name)+"\')"
+		g.conn.execute(text(update_query))
+		g.conn.commit()
+		#'insert into shopping_cart values (' + str(userid) + ',' + str(prodid) + ')'
 		return redirect("/seller")
 @app.route('/seller/view-requests', methods=['GET','POST'])
 def view_requests():
@@ -352,10 +358,11 @@ def view_requests():
 		return render_template('function/seller/view_requests.html')
 	if request.method == "POST":
 		### access db
-		select_query = "SELECT *  FROM  sale_request WHERE seller_id = :seller"
-		params = {'seller': g.user["user_id"]}
+		select_query = "SELECT *  FROM  sale_request WHERE seller_id ="+ str(session["user_id"])#:seller"
+		#params = {'seller': g.user["user_id"]}
 		cursor = g.conn.execute(text(select_query))
 		sale_req = []
+		print(len(cursor))
 		print(cursor.keys())
 		for entry in cursor:
 			# salereq: column info below
