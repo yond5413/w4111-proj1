@@ -80,8 +80,21 @@ def teardown_request(exception):
 #
 @app.route('/')
 def index():
-	
-	return render_template("proj1/index.html",)
+	select_query = "SELECT * FROM product ORDER BY popularity DESC LIMIT 10"
+	cursor = g.conn.execute(text(select_query))
+	products = []
+	for result in cursor:
+		prod = {}
+		prod["Name"] = result[2]
+		prod["Price"] = result[1]
+		prod["Category"] = result[3]
+		prod["Description"] = result[4]
+		prod["Popularity"] = result[5]
+		prod["Quantity"] = result[6]
+		prod["ID"] = result[0]
+		products.append(prod)	
+	#SELECT product_name, popularity FROM product ORDER BY popularity DESC LIMIT 10
+	return render_template("proj1/index.html",prods = products)
 
 #should delete/commentout before submitting 
 #Only have it to view db stuff without going to the google cloud tbh

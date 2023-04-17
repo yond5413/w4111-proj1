@@ -22,4 +22,22 @@
     {% else %}
     <p>To login/register access the through links above</p>
     {% endif %}
+
+    <div class="scrollable">
+      <ul class="list-group">
+        <p><strong style="font-size: 20px;">Top 10 most popular products below!!!</strong></p>
+        {% for product in prods %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-0">{{ product['Name'] }}</h5>
+              <small class="text-muted">{{ product['Category'] }},In stock:{{ product['Quantity'] }}</small> 
+              <p> {{ product['Description'] }} </p>
+            </div>
+            <span class="badge badge-primary badge-pill"> {{ product['Price'] }}</span>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
 {% endblock %}
