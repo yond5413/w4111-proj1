@@ -290,13 +290,30 @@ def approve_sale_request():
 		return render_template('function/admin/approve_sale_request.html', sale_request = sale_req)
 	if request.method == 'POST':
 		if 'approve' in request.form:
-			seller_id = request.form["account_id"]
+			sale_id = request.form["sale_id"]
 			## add to product table
-			# update seller/ added allow privelleges
-			update_query = "UPDATE sale_request set request_status = true where seller_id = " +str(seller_id)
+			# update sale_request->request_status
+			update_query = "UPDATE sale_request set request_status = true where sale_id = " +str(sale_id)
 			cursor = g.conn.execute(text(update_query))
 			g.conn.commit()
 			#### add to products
+			select_query = "SELECT * FROM sale_request WHERE sale_id = " +str(sale_id)
+			new_prod = g.conn.execute(text(select_query))
+			############################################
+			#new_id = NotImplemented
+			#['sale_id', 'stock', 'price', 'category', 'description', 'image', 'request_status', 'seller_id', 'name']
+			stock = new_prod.fetchone()[1] 
+			price = new_prod.fetchone()[2]
+			category = new_prod.fetchone()[3]
+			description = new_prod.fetchone()[4]
+			name = new_prod.fetchone()[8]
+			select_query= 'select count(*) from product'
+			result = g.conn.execute(text(select_query))
+			new_id = result.fetchone()[0]
+			#prod_id,price,name,category,description, image, popularity, quantity
+			update_query = "Insert into product(prod_id,quantity,price,category,description,name) values("+ str(new_id)+"," +str(stock)+","+str(price)+",\'" +str(category)+"\',\'"+str(description)+"\',"+",\'" +str(name)+"\')"
+			g.conn.execute(text(update_query))
+			g.conn.commit()
 			return redirect("/admin")
 		elif 'decline' in request.form:
 			#seller_id = request.form["account_id"]
@@ -507,7 +524,6 @@ def user_in_session():
 def getAccountType(accountId):
 	## used for login
 	## essentially itterate accross each table and see if id is in table
-	
 	select_query = 'SELECT account_id From consumer'
 	result = g.conn.execute(text(select))
 	for id in result:
