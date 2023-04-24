@@ -30,3 +30,4 @@ another, and we thought it was cool to see everything come together like such.
 -> We thought this was an interesting as it is one of the most flexible pages on the application. 
 A consumer is able to make many request/queries by adding and deleting from their shopping cart. It is the main page that does not get
 redirected after completion of it's main task and can be toyed with to the user's content within the constraints of our project.
+-> https://www.postgresqltutorial.com/postgresql-administration/postgresql-show-tables/
